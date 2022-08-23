@@ -2,6 +2,7 @@ package main
 
 import (
 	"be11/project1/config"
+	"be11/project1/entities"
 	"fmt"
 	"os"
 
@@ -48,6 +49,37 @@ func main() {
 		case 1:
 			fmt.Println("Menu Sign Up")
 
+			newUser := entities.User{}
+
+			fmt.Print("Nama \t\t: ")
+			fmt.Scanln(&newUser.NAMA)
+			fmt.Print("No. Telp \t: ")
+			fmt.Scanln(&newUser.NO_TELP)
+			fmt.Print("Password \t: ")
+			fmt.Scanln(&newUser.PASSWORD)
+
+			var query = "insert into user (nama, no_telp, password) values (?, ?, ?)"
+			statement, errPrepare := db.Prepare(query)
+
+			if errPrepare != nil {
+				fmt.Println("Error prepare insert", errPrepare.Error())
+			}
+
+			result, errExec := statement.Exec(newUser.NAMA, newUser.NO_TELP, newUser.PASSWORD)
+			if errExec != nil {
+				fmt.Println("Error exec insert", errExec.Error())
+			} else {
+				row, errRow := result.RowsAffected()
+				if errRow != nil {
+					fmt.Println("Error row insert", errRow.Error())
+				}
+				if row > 0 {
+					fmt.Println("Success Insert Data")
+				} else {
+					fmt.Println("Gagal insert")
+				}
+			}
+
 		case 2:
 			fmt.Println("Menu Login")
 
@@ -85,3 +117,5 @@ func main() {
 	}
 
 }
+
+// row_user, row_balance, errInputUser := user.InputDataUser(db, newUser)
