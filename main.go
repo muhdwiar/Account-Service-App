@@ -22,7 +22,7 @@ func main() {
 	}
 
 	dbConnection := os.Getenv("DB_CONNECTION")
-	fmt.Println(dbConnection)
+
 	db := config.ConnectToDB(dbConnection)
 	defer db.Close()
 
@@ -44,7 +44,6 @@ func main() {
 		fmt.Println("10. Cari User")
 		fmt.Println("0. Log Out")
 
-		fmt.Println("Data Login:\n", User_Login)
 		fmt.Print("Masukkan Nomor Menu:")
 		fmt.Scanln(&option)
 
@@ -66,7 +65,8 @@ func main() {
 				fmt.Println("ERROR LOGIN :", err_massage.Error())
 			} else {
 				if (temp_loginData != entities.User{}) {
-					User_Login.ID = temp_loginData.ID
+					User_Login = temp_loginData
+					fmt.Println(User_Login)
 					fmt.Print("BERHASIL LOGIN\n\n")
 				} else {
 					User_Login = entities.User{}
