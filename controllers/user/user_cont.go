@@ -84,15 +84,6 @@ func DeleteUser(db *sql.DB, deleteUser entities.User) (int, error) {
 			return 0, errRow_Affect
 		}
 
-		deleteBalance := entities.Balance{}
-		deleteBalance.ID = deleteUser.ID
-
-		row_balance, err := balance.DeleteBalance(db, deleteBalance)
-
-		if err != nil {
-			return 1, 0, err
-		}
-
 		return int(row_user), nil
 	}
 }
