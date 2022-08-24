@@ -22,10 +22,11 @@ func main() {
 	}
 
 	dbConnection := os.Getenv("DB_CONNECTION")
-	fmt.Println(dbConnection)
+
 	db := config.ConnectToDB(dbConnection)
 	defer db.Close()
 
+	var User_Login = entities.User{}
 	var option = -1
 	for option != 0 {
 
@@ -73,6 +74,25 @@ func main() {
 
 		case 2:
 			fmt.Println("Menu Login")
+
+			fmt.Print("Silahkan Masukkan No. Telepon \t:")
+			fmt.Scanln(&User_Login.NO_TELP)
+			fmt.Print("Silahkan Masukkan Password \t:")
+			fmt.Scanln(&User_Login.PASSWORD)
+
+			temp_loginData, err_massage := user.LoginUser(db, User_Login)
+
+			if err_massage != nil {
+				fmt.Println("ERROR LOGIN :", err_massage.Error())
+			} else {
+				if (temp_loginData != entities.User{}) {
+					User_Login = temp_loginData
+					fmt.Print("BERHASIL LOGIN\n\n")
+				} else {
+					User_Login = entities.User{}
+					fmt.Print("AKUN TIDAK ADA SILHAKAN MELAKUKAN SIGN UP\n\n")
+				}
+			}
 
 		case 3:
 			fmt.Println("Menu Profil User")
