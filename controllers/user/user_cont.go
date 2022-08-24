@@ -42,7 +42,6 @@ func Registrasi(db *sql.DB, newUser entities.User) (int, int, error) {
 	}
 }
 
-
 func LoginUser(db *sql.DB, loginUser entities.User) (entities.User, error) {
 	result, err := db.Query("SELECT id, nama, no_telp FROM user WHERE no_telp = ? AND password = ?", &loginUser.NO_TELP, &loginUser.PASSWORD)
 
@@ -65,3 +64,35 @@ func LoginUser(db *sql.DB, loginUser entities.User) (entities.User, error) {
 
 }
 
+func DeleteUser(db *sql.DB, deleteUser entities.User) (int, error) {
+	var delete_query = "DELETE FROM user WHERE id = ?"
+
+	statement, errPrep := db.Prepare(delete_query)
+
+	if errPrep != nil {
+		return -1, errPrep
+	}
+
+	result, errExec := statement.Exec(deleteUser.ID)
+
+	if errExec != nil {
+		return -1, errExec
+	} else {
+		row_user, errRow_Affect := result.RowsAffected()
+
+		if errRow_Affect != nil {
+			return 0, errRow_Affect
+		}
+
+		deleteBalance := entities.Balance{}
+		deleteBalance.ID = deleteUser.ID
+
+		row_balance, err := balance.DeleteBalance(db, deleteBalance)
+
+		if err != nil {
+			return 1, 0, err
+		}
+
+		return int(row_user), nil
+	}
+}
