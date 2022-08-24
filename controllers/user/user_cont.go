@@ -74,3 +74,25 @@ func ReadProfile(db *sql.DB, datauser entities.User) (entities.User, error) {
 	}
 	return dataUser, nil
 }
+
+func UpdateProfile(db *sql.DB, datauser entities.User, user entities.User) (int, error) {
+	// _, err := db.Exec("update user set nama = ?, no_telp = ?, password = ? where id = ?", datauser.ID)
+
+	var query = "update user set nama = ?, no_telp = ?, password = ? where id = ?"
+
+	statement, errPrepare := db.Prepare(query)
+	if errPrepare != nil {
+		return -1, errPrepare
+	}
+	result, errExec := statement.Exec(user.NAMA, user.NO_TELP, user.PASSWORD, datauser.ID)
+	if errExec != nil {
+		return -1, errExec
+	} else {
+		row, errRow := result.RowsAffected()
+		if errRow != nil {
+			return 0, errRow
+		}
+		return int(row), nil
+	}
+
+}

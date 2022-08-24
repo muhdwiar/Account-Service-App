@@ -106,7 +106,26 @@ func main() {
 			}
 
 		case 4:
+			var User = entities.User{}
 			fmt.Println("Menu Update Data")
+
+			fmt.Print("Nama \t\t: ")
+			fmt.Scanln(&User.NAMA)
+			fmt.Print("No. Telp \t: ")
+			fmt.Scanln(&User.NO_TELP)
+			fmt.Print("Password \t: ")
+			fmt.Scanln(&User.PASSWORD)
+
+			temp_updateprof, err_updateproff := user.UpdateProfile(db, User_Login, User)
+			if err_updateproff != nil {
+				fmt.Println("Gagal masukan data", err_updateproff.Error())
+			} else {
+				if temp_updateprof > 0 {
+					fmt.Println("Success Insert Data")
+				} else {
+					fmt.Println("Gagal insert")
+				}
+			}
 
 		case 5:
 			fmt.Println("Menu Hapus Akun")
