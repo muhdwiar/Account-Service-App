@@ -2,6 +2,7 @@ package main
 
 import (
 	"be11/project1/config"
+	"be11/project1/controllers/user"
 	"be11/project1/entities"
 	"fmt"
 	"os"
@@ -48,7 +49,6 @@ func main() {
 		switch option {
 		case 1:
 			fmt.Println("Menu Sign Up")
-
 			newUser := entities.User{}
 
 			fmt.Print("Nama \t\t: ")
@@ -58,22 +58,13 @@ func main() {
 			fmt.Print("Password \t: ")
 			fmt.Scanln(&newUser.PASSWORD)
 
-			var query = "insert into user (nama, no_telp, password) values (?, ?, ?)"
-			statement, errPrepare := db.Prepare(query)
+			row_user, row_balance, err := user.Registrasi(db, newUser)
 
-			if errPrepare != nil {
-				fmt.Println("Error prepare insert", errPrepare.Error())
-			}
+			if err != nil {
+				fmt.Println("Gagal masukan data", err.Error())
 
-			result, errExec := statement.Exec(newUser.NAMA, newUser.NO_TELP, newUser.PASSWORD)
-			if errExec != nil {
-				fmt.Println("Error exec insert", errExec.Error())
 			} else {
-				row, errRow := result.RowsAffected()
-				if errRow != nil {
-					fmt.Println("Error row insert", errRow.Error())
-				}
-				if row > 0 {
+				if row_user > 0 && row_balance > 0 {
 					fmt.Println("Success Insert Data")
 				} else {
 					fmt.Println("Gagal insert")
