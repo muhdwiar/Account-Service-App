@@ -95,7 +95,15 @@ func main() {
 			}
 
 		case 3:
-			fmt.Println("Menu Profil User")
+			fmt.Println("Profil User")
+			// fmt.Println(User_Login)
+			temp_prof, err_profile := user.ReadProfile(db, User_Login)
+			if err_profile != nil {
+				fmt.Println("Gagal tmapilkan data", err_profile.Error())
+			} else {
+				fmt.Println("ID\t\t: ", temp_prof.ID, "\nNama\t\t: ", temp_prof.NAMA,
+					"\nMember sejak\t: ", temp_prof.CREATED_AT, "\nUpdate\t\t: ", temp_prof.UPDATED_AT, "\nSaldo\t\t: ", temp_prof.BALANCE.SALDO)
+			}
 
 		case 4:
 			fmt.Println("Menu Update Data")

@@ -9,4 +9,5 @@ type User struct {
 	PASSWORD   string
 	CREATED_AT time.Time
 	UPDATED_AT time.Time
+	BALANCE    Balance
 }
