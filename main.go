@@ -66,7 +66,6 @@ func main() {
 			} else {
 				if (temp_loginData != entities.User{}) {
 					User_Login = temp_loginData
-					fmt.Println(User_Login)
 					fmt.Print("BERHASIL LOGIN\n\n")
 				} else {
 					User_Login = entities.User{}
