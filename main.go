@@ -2,6 +2,7 @@ package main
 
 import (
 	"be11/project1/config"
+	"be11/project1/controllers/transaksi"
 	"be11/project1/controllers/user"
 	"be11/project1/entities"
 	"fmt"
@@ -107,8 +108,8 @@ func main() {
 			}
 
 		case 4:
-			var User = entities.User{}
 			fmt.Println("Menu Update Data")
+			var User = entities.User{}
 
 			fmt.Print("Nama \t\t: ")
 			fmt.Scanln(&User.NAMA)
@@ -151,12 +152,35 @@ func main() {
 
 		case 6:
 			fmt.Println("Menu Top Up")
+			var Transaksi = entities.Transaksi{}
+			fmt.Print("Nominal \t: ")
+			fmt.Scanln(&Transaksi.NOMINAL)
+
+			temp, temp2, err := transaksi.TopUp(db, Transaksi, User_Login)
+			if err != nil {
+				fmt.Println("Gagal masukan data", err.Error())
+
+			} else {
+				if temp > 0 && temp2 > 0 {
+					fmt.Println("Success Insert Data")
+				} else {
+					fmt.Println("Gagal insert")
+				}
+			}
 
 		case 7:
 			fmt.Println("Menu Transfer")
 
 		case 8:
 			fmt.Println("Menu History Top Up")
+			result, err := transaksi.HistoryTP(db, User_Login)
+			if err != nil {
+				fmt.Println("error membaca data dari database", err)
+			} else {
+				for _, v := range result {
+					fmt.Println("Nominal :", v.NOMINAL, "\tPada Tgl: ", v.CREATED_AT)
+				}
+			}
 
 		case 9:
 			fmt.Println("Menu History Transfer")
