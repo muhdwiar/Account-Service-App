@@ -96,10 +96,37 @@ func main() {
 			}
 
 		case 3:
-			fmt.Println("Menu Profil User")
+			fmt.Println("Profil User")
+			// fmt.Println(User_Login)
+			temp_prof, err_profile := user.ReadProfile(db, User_Login)
+			if err_profile != nil {
+				fmt.Println("Gagal tmapilkan data", err_profile.Error())
+			} else {
+				fmt.Println("ID\t\t: ", temp_prof.ID, "\nNama\t\t: ", temp_prof.NAMA,
+					"\nMember sejak\t: ", temp_prof.CREATED_AT, "\nUpdate\t\t: ", temp_prof.UPDATED_AT, "\nSaldo\t\t: ", temp_prof.BALANCE.SALDO)
+			}
 
 		case 4:
+			var User = entities.User{}
 			fmt.Println("Menu Update Data")
+
+			fmt.Print("Nama \t\t: ")
+			fmt.Scanln(&User.NAMA)
+			fmt.Print("No. Telp \t: ")
+			fmt.Scanln(&User.NO_TELP)
+			fmt.Print("Password \t: ")
+			fmt.Scanln(&User.PASSWORD)
+
+			temp_updateprof, err_updateproff := user.UpdateProfile(db, User_Login, User)
+			if err_updateproff != nil {
+				fmt.Println("Gagal masukan data", err_updateproff.Error())
+			} else {
+				if temp_updateprof > 0 {
+					fmt.Println("Success Insert Data")
+				} else {
+					fmt.Println("Gagal insert")
+				}
+			}
 
 		case 5:
 			fmt.Println("Menu Hapus Akun")

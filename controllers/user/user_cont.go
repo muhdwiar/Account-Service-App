@@ -64,6 +64,39 @@ func LoginUser(db *sql.DB, loginUser entities.User) (entities.User, error) {
 
 }
 
+func ReadProfile(db *sql.DB, datauser entities.User) (entities.User, error) {
+
+	dataUser := entities.User{}
+	err := db.QueryRow("SELECT u.id, u.nama, u.no_telp, u.created_at, u.updated_at, b.saldo FROM user u INNER JOIN balance b ON u.id = b.id WHERE u.id = ?", datauser.ID).
+		Scan(&dataUser.ID, &dataUser.NAMA, &dataUser.NO_TELP, &dataUser.CREATED_AT, &dataUser.UPDATED_AT, &dataUser.BALANCE.SALDO)
+	if err != nil {
+		return dataUser, nil
+	}
+	return dataUser, nil
+}
+
+func UpdateProfile(db *sql.DB, datauser entities.User, user entities.User) (int, error) {
+	// _, err := db.Exec("update user set nama = ?, no_telp = ?, password = ? where id = ?", datauser.ID)
+
+	var query = "update user set nama = ?, no_telp = ?, password = ? where id = ?"
+
+	statement, errPrepare := db.Prepare(query)
+	if errPrepare != nil {
+		return -1, errPrepare
+	}
+	result, errExec := statement.Exec(user.NAMA, user.NO_TELP, user.PASSWORD, datauser.ID)
+	if errExec != nil {
+		return -1, errExec
+	} else {
+		row, errRow := result.RowsAffected()
+		if errRow != nil {
+			return 0, errRow
+		}
+		return int(row), nil
+	}
+
+}
+
 func DeleteUser(db *sql.DB, deleteUser entities.User) (int, error) {
 	var delete_query = "DELETE FROM user WHERE id = ?"
 
