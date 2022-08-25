@@ -2,90 +2,107 @@ package transaksi
 
 import (
 	"be11/project1/controllers/balance"
+	"be11/project1/controllers/user"
 	"be11/project1/entities"
 	"database/sql"
-	"fmt"
-	"time"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
-func InsertTrans(db *sql.DB, dataTrans entities.Transaksi) (int, error) {
-
-	var query = "INSERT INTO transaksi (user_id, action, nominal, user_id_penerima, created_at) VALUES (?, ?, ?, ?, ?);"
-	statement, errPrepare := db.Prepare(query)
+func TopUp(db *sql.DB, datransaksi entities.Transaksi, datauser entities.User) (int, int, error) {
+	var query = "insert into transaksi (user_id, action, nominal, user_id_penerima) values (?, ?, ?, ?)"
+	stat, errPrepare := db.Prepare(query)
 
 	if errPrepare != nil {
-		return -1, errPrepare
+		return -1, -1, errPrepare
 	}
 
-	result, errExec := statement.Exec(dataTrans.USER_ID, dataTrans.ACTION, dataTrans.NOMINAL, dataTrans.USER_ID_PENERIMA, dataTrans.CREATED_AT)
+	result, errExec := stat.Exec(datauser.ID, "Top UP", datransaksi.NOMINAL, datauser.ID)
 
 	if errExec != nil {
-		return -1, errExec
+		return -1, -1, errExec
 	} else {
 		row, errRow := result.RowsAffected()
 		if errRow != nil {
-			return 0, errRow
+			return 0, -1, errRow
 		}
-		return int(row), nil
+		UpdateSaldo := entities.Balance{}
+		UpdateSaldo.ID = datauser.ID
+
+		temp, tempErr := balance.Datasaldo(db, UpdateSaldo)
+		if tempErr != nil {
+			return 0, -1, tempErr
+		}
+
+		UpdateSaldo.SALDO = temp + datransaksi.NOMINAL
+
+		rBalance, errRbalance := balance.UpdateSaldo(db, UpdateSaldo)
+		if errRbalance != nil {
+			return 0, 0, errRbalance
+		}
+		return int(row), int(rBalance), nil
 	}
 
 }
 
-func TransferBalance(db *sql.DB, trans_userLogin entities.Transaksi, userPenerima entities.User) (int, int, int, error) {
+func Transaksi(db *sql.DB, dataTrans entities.Transaksi, dataUser entities.User) (int, int, int, error) {
+	id_receiver, err_dataReceiver := user.GetIdUser(db, dataUser)
 
-	// UPDATE BALANCE LOGIN USER
-	balance_userLog, err_userLog := balance.GetUserBalance(db, trans_userLogin, entities.User{})
+	if err_dataReceiver != nil {
+		return 0, 0, -1, err_dataReceiver
+	}
 
-	if err_userLog != nil {
-		return -1, -1, -1, err_userLog
+	var query = "INSERT INTO transaksi (user_id, action, nominal, user_id_penerima) VALUES (?, ?, ?, ?);"
+	statement, errPrepare := db.Prepare(query)
+
+	if errPrepare != nil {
+		return -1, -1, -1, errPrepare
+	}
+
+	result, errExec := statement.Exec(dataTrans.USER_ID, "Transfer", dataTrans.NOMINAL, id_receiver)
+
+	if errExec != nil {
+		return -1, -1, -1, errExec
 	} else {
-		balance_userLog.SALDO = balance_userLog.SALDO - trans_userLogin.NOMINAL
-		if balance_userLog.SALDO < 0 {
-			fmt.Println("GAGAL TRANSFER, SALDO ANDA KURANG DARI NOMINAL TRANSFER!!!")
-			return -1, -1, -1, err_userLog
-		}
-	}
-
-	row_balUser, err_balUser := balance.TransferBalance(db, balance_userLog)
-
-	if err_balUser != nil {
-		return row_balUser, -1, -1, err_balUser
-	}
-
-	// UPDATE BALANCE USER PENERIMA
-	balance_penerima, err_penerima := balance.GetUserBalance(db, entities.Transaksi{}, userPenerima)
-
-	if err_penerima != nil {
-		return row_balUser, -1, -1, err_userLog
-	} else {
-		balance_penerima.SALDO = balance_penerima.SALDO + trans_userLogin.NOMINAL
-	}
-
-	row_balPenerima, err_balPenerima := balance.TransferBalance(db, balance_penerima)
-
-	if err_balPenerima != nil {
-		return row_balUser, row_balPenerima, -1, err_balPenerima
-	}
-
-	// INSERT DATA TRANSAKSI
-	if row_balUser > 0 && row_balPenerima > 0 {
-
-		trans_userLogin.ACTION = "Transfer"
-		trans_userLogin.USER_ID_PENERIMA = balance_penerima.ID
-		trans_userLogin.CREATED_AT = time.Now()
-
-		row_transfer, err_transfer := InsertTrans(db, trans_userLogin)
-
-		if err_transfer != nil {
-			return row_balUser, row_balPenerima, row_transfer, err_transfer
+		row, errRow := result.RowsAffected()
+		if errRow != nil {
+			return 0, -1, -1, errRow
 		}
 
-		fmt.Println(balance_penerima.SALDO)
-		fmt.Println(balance_userLog.SALDO)
+		// UPDATE SALDO USER LOGIN
+		UpdateSaldo_userLog := entities.Balance{}
+		UpdateSaldo_userLog.ID = dataTrans.USER_ID
 
-		return row_balUser, row_balPenerima, row_transfer, nil
+		balance_userLog, err_userLog := balance.Datasaldo(db, UpdateSaldo_userLog)
+		if err_userLog != nil {
+			return 0, -1, -1, err_userLog
+		}
 
-	} else {
-		return row_balUser, row_balPenerima, -1, nil
+		UpdateSaldo_userLog.SALDO = balance_userLog - dataTrans.NOMINAL
+
+		rBalance_userLog, errRbalance_userLog := balance.UpdateSaldo(db, UpdateSaldo_userLog)
+		if errRbalance_userLog != nil {
+			return 0, 0, -1, errRbalance_userLog
+		}
+
+		// UPDATE SALDO USER PENERIMA
+
+		UpdateSaldo_receiver := entities.Balance{}
+		UpdateSaldo_receiver.ID = id_receiver
+
+		balance_receiver, err_receiver := balance.Datasaldo(db, UpdateSaldo_receiver)
+		if err_receiver != nil {
+			return 0, 0, -1, err_receiver
+		}
+
+		UpdateSaldo_receiver.SALDO = balance_receiver - dataTrans.NOMINAL
+
+		rBalance_receiver, errRbalance_receiver := balance.UpdateSaldo(db, UpdateSaldo_receiver)
+
+		if errRbalance_receiver != nil {
+			return 0, 0, 0, errRbalance_receiver
+		}
+
+		return int(row), int(rBalance_userLog), int(rBalance_receiver), nil
 	}
 }

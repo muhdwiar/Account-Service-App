@@ -7,6 +7,7 @@ import (
 	"be11/project1/entities"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -96,17 +97,76 @@ func main() {
 			}
 
 		case 3:
-			fmt.Println("Menu Profil User")
+			fmt.Println("Profil User")
+			// fmt.Println(User_Login)
+			temp_prof, err_profile := user.ReadProfile(db, User_Login)
+			if err_profile != nil {
+				fmt.Println("Gagal tmapilkan data", err_profile.Error())
+			} else {
+				fmt.Println("ID\t\t: ", temp_prof.ID, "\nNama\t\t: ", temp_prof.NAMA,
+					"\nMember sejak\t: ", temp_prof.CREATED_AT, "\nUpdate\t\t: ", temp_prof.UPDATED_AT, "\nSaldo\t\t: ", temp_prof.BALANCE.SALDO)
+			}
 
 		case 4:
+			var User = entities.User{}
 			fmt.Println("Menu Update Data")
+
+			fmt.Print("Nama \t\t: ")
+			fmt.Scanln(&User.NAMA)
+			fmt.Print("No. Telp \t: ")
+			fmt.Scanln(&User.NO_TELP)
+			fmt.Print("Password \t: ")
+			fmt.Scanln(&User.PASSWORD)
+
+			temp_updateprof, err_updateproff := user.UpdateProfile(db, User_Login, User)
+			if err_updateproff != nil {
+				fmt.Println("Gagal masukan data", err_updateproff.Error())
+			} else {
+				if temp_updateprof > 0 {
+					fmt.Println("Success Insert Data")
+				} else {
+					fmt.Println("Gagal insert")
+				}
+			}
 
 		case 5:
 			fmt.Println("Menu Hapus Akun")
 
+			var choice string
+			fmt.Print("APAKAH ANDA YAKIN INGIN MENGHAPUS AKUN ANDA (masukan Y untuk menghapus) : ")
+			fmt.Scanln(&choice)
+			if strings.ToUpper(choice) == "Y" {
+				row_user, err := user.DeleteUser(db, User_Login)
+
+				if err != nil {
+					fmt.Println("ERROR DELETE USER:", err.Error())
+				} else {
+					if row_user > 0 {
+						User_Login = entities.User{}
+						fmt.Println("AKUN ANDA TELAH DIHAPUS, SILAHKAN LOGIN LAGI")
+					} else {
+						fmt.Println("GAGAL HAPUS AKUN")
+					}
+				}
+			}
+
 		case 6:
 			fmt.Println("Menu Top Up")
+			var Transaksi = entities.Transaksi{}
+			fmt.Print("Nominal \t: ")
+			fmt.Scanln(&Transaksi.NOMINAL)
 
+			temp, temp2, err := transaksi.TopUp(db, Transaksi, User_Login)
+			if err != nil {
+				fmt.Println("Gagal masukan data", err.Error())
+
+			} else {
+				if temp > 0 && temp2 > 0 {
+					fmt.Println("Success Insert Data")
+				} else {
+					fmt.Println("Gagal insert")
+				}
+			}
 		case 7:
 			fmt.Println("Menu Transfer")
 			trans_userLogin := entities.Transaksi{}
@@ -121,9 +181,10 @@ func main() {
 			if userPenerima.NO_TELP == User_Login.NO_TELP {
 				fmt.Println("GAGAL TRANSFER, NO.TELP PENERIMA TIDAK BOLEH DIISI NO.TELP PENGIRIM\n ")
 			} else {
-				row_user, row_penerima, row_trans, err := transaksi.TransferBalance(db, trans_userLogin, userPenerima)
+				row_user, row_penerima, row_trans, err := transaksi.Transaksi(db, trans_userLogin, userPenerima)
 
 				if err != nil {
+					fmt.Println(row_user, row_penerima, row_trans)
 					fmt.Println("ERROR TRANSFER :", err.Error(), "\n ")
 				} else {
 					if row_user > 0 && row_penerima > 0 && row_trans > 0 {
@@ -154,5 +215,3 @@ func main() {
 	}
 
 }
-
-// row_user, row_balance, errInputUser := user.InputDataUser(db, newUser)
