@@ -163,6 +163,23 @@ func main() {
 
 		case 10:
 			fmt.Println("Menu Cari User")
+			temp_user := entities.User{}
+			fmt.Print("Masukkan No.Telp User :")
+			fmt.Scanln(&temp_user.NO_TELP)
+
+			data_user, err_user := user.FindUser(db, temp_user)
+
+			if err_user != nil {
+				fmt.Println("Gagal mencari user :", err_user.Error())
+			} else {
+				if (data_user == entities.User{}) {
+					fmt.Println("USER TIDAK DITEMUKAN")
+
+				} else {
+					fmt.Println("ID\t\t: ", data_user.ID, "\nNama\t\t: ", data_user.NAMA,
+						"\nNo.Telp\t\t: ", data_user.NO_TELP, "\nMember sejak\t: ", data_user.CREATED_AT.Format("2006-01-02 15:04:05"), "\n ")
+				}
+			}
 
 		case 0:
 			fmt.Println("\nTerima Kasih Telah Bertransaksi")
