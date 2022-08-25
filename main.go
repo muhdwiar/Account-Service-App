@@ -125,8 +125,8 @@ func main() {
 			fmt.Println("Menu History Transfer")
 
 			var opsiTrans int
-			fmt.Println("1. Data Transfer Saldo")
-			fmt.Println("2. Data Pengirim Saldo")
+			fmt.Println("1. Data Sebagai Pengirim")
+			fmt.Println("2. Data Sebagai Penerima")
 			fmt.Print("Masukkan Opsi :")
 			fmt.Scanln(&opsiTrans)
 
@@ -169,5 +169,3 @@ func main() {
 	}
 
 }
-
-// row_user, row_balance, errInputUser := user.InputDataUser(db, newUser)
