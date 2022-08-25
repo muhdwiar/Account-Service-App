@@ -42,7 +42,6 @@ func Registrasi(db *sql.DB, newUser entities.User) (int, int, error) {
 	}
 }
 
-
 func LoginUser(db *sql.DB, loginUser entities.User) (entities.User, error) {
 	result, err := db.Query("SELECT id, nama, no_telp FROM user WHERE no_telp = ? AND password = ?", &loginUser.NO_TELP, &loginUser.PASSWORD)
 
@@ -64,4 +63,3 @@ func LoginUser(db *sql.DB, loginUser entities.User) (entities.User, error) {
 	return dataUserLogin, nil
 
 }
-
