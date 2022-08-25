@@ -2,6 +2,7 @@ package main
 
 import (
 	"be11/project1/config"
+	"be11/project1/controllers/transaksi"
 	"be11/project1/controllers/user"
 	"be11/project1/entities"
 	"fmt"
@@ -151,7 +152,21 @@ func main() {
 
 		case 6:
 			fmt.Println("Menu Top Up")
+			var Transaksi = entities.Transaksi{}
+			fmt.Print("Nominal \t: ")
+			fmt.Scanln(&Transaksi.NOMINAL)
 
+			temp, temp2, err := transaksi.TopUp(db, Transaksi, User_Login)
+			if err != nil {
+				fmt.Println("Gagal masukan data", err.Error())
+
+			} else {
+				if temp > 0 && temp2 > 0 {
+					fmt.Println("Success Insert Data")
+				} else {
+					fmt.Println("Gagal insert")
+				}
+			}
 		case 7:
 			fmt.Println("Menu Transfer")
 
