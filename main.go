@@ -2,6 +2,7 @@ package main
 
 import (
 	"be11/project1/config"
+	"be11/project1/controllers/transaksi"
 	"be11/project1/controllers/user"
 	"be11/project1/entities"
 	"fmt"
@@ -99,9 +100,9 @@ func main() {
 			// fmt.Println(User_Login)
 			temp_prof, err_profile := user.ReadProfile(db, User_Login)
 			if err_profile != nil {
-				fmt.Println("Gagal tmapilkan data", err_profile.Error())
+				fmt.Println("Gagal tampilkan data", err_profile.Error())
 			} else {
-				fmt.Println("ID\t\t: ", temp_prof.ID, "\nNama\t\t: ", temp_prof.NAMA,
+				fmt.Println("ID\t\t: ", temp_prof.ID, "\nNama\t\t: ", temp_prof.NAMA, "\nNo.Telp\t\t: ", temp_prof.NO_TELP,
 					"\nMember sejak\t: ", temp_prof.CREATED_AT, "\nUpdate\t\t: ", temp_prof.UPDATED_AT, "\nSaldo\t\t: ", temp_prof.BALANCE.SALDO)
 			}
 
@@ -122,6 +123,37 @@ func main() {
 
 		case 9:
 			fmt.Println("Menu History Transfer")
+
+			var opsiTrans int
+			fmt.Println("1. Data Transfer Saldo")
+			fmt.Println("2. Data Pengirim Saldo")
+			fmt.Scanln(&opsiTrans)
+
+			switch opsiTrans {
+			case 1:
+				data_sender, err_sender := transaksi.GetTransfer_asSender(db, User_Login)
+
+				if err_sender != nil {
+					fmt.Println("ERROR READ HISTORY TRANSFER :", err_sender.Error())
+				} else {
+					for _, v := range data_sender {
+						fmt.Println("ID :", v.ID, "\tNama :", v.USER.NAMA, "\tNo.Telp :", v.USER.NO_TELP,
+							"\tNominal :", v.NOMINAL, "\tMember Sejak :", v.CREATED_AT.Format("2006-01-02 15:04:05"))
+					}
+				}
+			case 2:
+				data_receiver, err_receiver := transaksi.GetTransfer_asReceiver(db, User_Login)
+
+				if err_receiver != nil {
+					fmt.Println("ERROR READ HISTORY TRANSFER :", err_receiver.Error())
+				} else {
+					for _, v := range data_receiver {
+						fmt.Println("ID :", v.ID, "\tNama :", v.USER.NAMA, "\tNo.Telp :", v.USER.NO_TELP,
+							"\tNominal :", v.NOMINAL, "\tMember Sejak :", v.CREATED_AT.Format("2006-01-02 15:04:05"))
+					}
+				}
+			}
+			fmt.Println()
 
 		case 10:
 			fmt.Println("Menu Cari User")
