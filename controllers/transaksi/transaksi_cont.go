@@ -50,14 +50,14 @@ func HistoryTP(db *sql.DB, user entities.User) ([]entities.Transaksi, error) {
 		return nil, errselect
 	}
 
-	var historyTP []entities.Transaksi //penampung semua data guru
-	for results.Next() {               // membaca per baris
-		var rowtopup entities.Transaksi // penampung tiap baris
+	var historyTP []entities.Transaksi
+	for results.Next() {
+		var rowtopup entities.Transaksi
 		errScan := results.Scan(&rowtopup.NOMINAL, &rowtopup.CREATED_AT)
 		if errScan != nil {
 			return nil, errScan
 		}
-		historyTP = append(historyTP, rowtopup) //menambahkan ke slice
+		historyTP = append(historyTP, rowtopup)
 	}
 
 	return historyTP, nil
