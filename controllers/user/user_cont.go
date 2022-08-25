@@ -130,3 +130,14 @@ func GetIdUser(db *sql.DB, datauser entities.User) (int, error) {
 	}
 	return dataUser.ID, nil
 }
+
+func FindUser(db *sql.DB, datauser entities.User) (entities.User, error) {
+
+	dataUser := entities.User{}
+	err := db.QueryRow("SELECT id, nama, no_telp, created_at FROM user WHERE no_telp = ?", datauser.NO_TELP).
+		Scan(&dataUser.ID, &dataUser.NAMA, &dataUser.NO_TELP, &dataUser.CREATED_AT)
+	if err != nil {
+		return dataUser, nil
+	}
+	return dataUser, nil
+}
