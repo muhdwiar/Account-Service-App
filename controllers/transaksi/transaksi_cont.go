@@ -43,3 +43,23 @@ func TopUp(db *sql.DB, datransaksi entities.Transaksi, datauser entities.User) (
 	}
 
 }
+
+func HistoryTP(db *sql.DB, user entities.User) ([]entities.Transaksi, error) {
+	results, errselect := db.Query("select nominal, created_at from transaksi where user_id = ? and action = 'Top UP'", &user.ID)
+	if errselect != nil {
+		return nil, errselect
+	}
+
+	var historyTP []entities.Transaksi
+	for results.Next() {
+		var rowtopup entities.Transaksi
+		errScan := results.Scan(&rowtopup.NOMINAL, &rowtopup.CREATED_AT)
+		if errScan != nil {
+			return nil, errScan
+		}
+		historyTP = append(historyTP, rowtopup)
+	}
+
+	return historyTP, nil
+
+}
