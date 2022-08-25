@@ -70,7 +70,7 @@ func ReadProfile(db *sql.DB, datauser entities.User) (entities.User, error) {
 	err := db.QueryRow("SELECT u.id, u.nama, u.no_telp, u.created_at, u.updated_at, b.saldo FROM user u INNER JOIN balance b ON u.id = b.id WHERE u.id = ?", datauser.ID).
 		Scan(&dataUser.ID, &dataUser.NAMA, &dataUser.NO_TELP, &dataUser.CREATED_AT, &dataUser.UPDATED_AT, &dataUser.BALANCE.SALDO)
 	if err != nil {
-		return dataUser, nil
+		return dataUser, err
 	}
 	return dataUser, nil
 }
@@ -119,4 +119,14 @@ func DeleteUser(db *sql.DB, deleteUser entities.User) (int, error) {
 
 		return int(row_user), nil
 	}
+}
+
+func GetIdUser(db *sql.DB, datauser entities.User) (int, error) {
+
+	dataUser := entities.User{}
+	err := db.QueryRow("SELECT id FROM user WHERE no_telp = ?", datauser.NO_TELP).Scan(&dataUser.ID)
+	if err != nil {
+		return dataUser.ID, err
+	}
+	return dataUser.ID, nil
 }

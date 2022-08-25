@@ -170,6 +170,32 @@ func main() {
 
 		case 7:
 			fmt.Println("Menu Transfer")
+			trans_userLogin := entities.Transaksi{}
+			userPenerima := entities.User{}
+
+			fmt.Print("Masukkan No.Telp Penerima : ")
+			fmt.Scanln(&userPenerima.NO_TELP)
+			fmt.Print("Masukkan Nominal Transfer : ")
+			fmt.Scanln(&trans_userLogin.NOMINAL)
+			trans_userLogin.USER_ID = User_Login.ID
+
+			if userPenerima.NO_TELP == User_Login.NO_TELP {
+				fmt.Println("GAGAL TRANSFER, NO.TELP PENERIMA TIDAK BOLEH DIISI NO.TELP PENGIRIM\n ")
+			} else {
+				row_user, row_penerima, row_trans, err := transaksi.Transaksi(db, trans_userLogin, userPenerima)
+
+				if err != nil {
+					fmt.Println(row_user, row_penerima, row_trans)
+					fmt.Println("ERROR TRANSFER :", err.Error(), "\n ")
+				} else {
+					if row_user > 0 && row_penerima > 0 && row_trans > 0 {
+						fmt.Println("BERHASIL TRANSFER\n ")
+					} else {
+						fmt.Println("GAGAL TRANSFER\n ")
+					}
+				}
+
+			}
 
 		case 8:
 			fmt.Println("Menu History Top Up")
