@@ -108,8 +108,8 @@ func main() {
 			}
 
 		case 4:
-			var User = entities.User{}
 			fmt.Println("Menu Update Data")
+			var User = entities.User{}
 
 			fmt.Print("Nama \t\t: ")
 			fmt.Scanln(&User.NAMA)
@@ -167,6 +167,7 @@ func main() {
 					fmt.Println("Gagal insert")
 				}
 			}
+
 		case 7:
 			fmt.Println("Menu Transfer")
 			trans_userLogin := entities.Transaksi{}
@@ -198,6 +199,14 @@ func main() {
 
 		case 8:
 			fmt.Println("Menu History Top Up")
+			result, err := transaksi.HistoryTP(db, User_Login)
+			if err != nil {
+				fmt.Println("error membaca data dari database", err)
+			} else {
+				for _, v := range result {
+					fmt.Println("Nominal :", v.NOMINAL, "\tPada Tgl: ", v.CREATED_AT)
+				}
+			}
 
 		case 9:
 			fmt.Println("Menu History Transfer")
