@@ -9,4 +9,5 @@ type Transaksi struct {
 	NOMINAL          int
 	USER_ID_PENERIMA int
 	CREATED_AT       time.Time
+	USER             User
 }
