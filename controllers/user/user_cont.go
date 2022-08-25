@@ -42,7 +42,6 @@ func Registrasi(db *sql.DB, newUser entities.User) (int, int, error) {
 	}
 }
 
-
 func LoginUser(db *sql.DB, loginUser entities.User) (entities.User, error) {
 	result, err := db.Query("SELECT id, nama, no_telp FROM user WHERE no_telp = ? AND password = ?", &loginUser.NO_TELP, &loginUser.PASSWORD)
 
@@ -65,3 +64,13 @@ func LoginUser(db *sql.DB, loginUser entities.User) (entities.User, error) {
 
 }
 
+func ReadProfile(db *sql.DB, datauser entities.User) (entities.User, error) {
+
+	dataUser := entities.User{}
+	err := db.QueryRow("SELECT u.id, u.nama, u.no_telp, u.created_at, u.updated_at, b.saldo FROM user u INNER JOIN balance b ON u.id = b.id WHERE u.id = ?", datauser.ID).
+		Scan(&dataUser.ID, &dataUser.NAMA, &dataUser.NO_TELP, &dataUser.CREATED_AT, &dataUser.UPDATED_AT, &dataUser.BALANCE.SALDO)
+	if err != nil {
+		return dataUser, nil
+	}
+	return dataUser, nil
+}
