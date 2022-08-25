@@ -96,3 +96,27 @@ func UpdateProfile(db *sql.DB, datauser entities.User, user entities.User) (int,
 	}
 
 }
+
+func DeleteUser(db *sql.DB, deleteUser entities.User) (int, error) {
+	var delete_query = "DELETE FROM user WHERE id = ?"
+
+	statement, errPrep := db.Prepare(delete_query)
+
+	if errPrep != nil {
+		return -1, errPrep
+	}
+
+	result, errExec := statement.Exec(deleteUser.ID)
+
+	if errExec != nil {
+		return -1, errExec
+	} else {
+		row_user, errRow_Affect := result.RowsAffected()
+
+		if errRow_Affect != nil {
+			return 0, errRow_Affect
+		}
+
+		return int(row_user), nil
+	}
+}

@@ -6,6 +6,7 @@ import (
 	"be11/project1/entities"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -130,6 +131,24 @@ func main() {
 		case 5:
 			fmt.Println("Menu Hapus Akun")
 
+			var choice string
+			fmt.Print("APAKAH ANDA YAKIN INGIN MENGHAPUS AKUN ANDA (masukan Y untuk menghapus) : ")
+			fmt.Scanln(&choice)
+			if strings.ToUpper(choice) == "Y" {
+				row_user, err := user.DeleteUser(db, User_Login)
+
+				if err != nil {
+					fmt.Println("ERROR DELETE USER:", err.Error())
+				} else {
+					if row_user > 0 {
+						User_Login = entities.User{}
+						fmt.Println("AKUN ANDA TELAH DIHAPUS, SILAHKAN LOGIN LAGI")
+					} else {
+						fmt.Println("GAGAL HAPUS AKUN")
+					}
+				}
+			}
+
 		case 6:
 			fmt.Println("Menu Top Up")
 
@@ -155,5 +174,3 @@ func main() {
 	}
 
 }
-
-// row_user, row_balance, errInputUser := user.InputDataUser(db, newUser)
