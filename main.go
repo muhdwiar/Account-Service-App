@@ -63,47 +63,20 @@ func main() {
 				fmt.Print("Password \t: ")
 				fmt.Scanln(&newUser.PASSWORD)
 
-				if newUser.NAMA == "" || newUser.NO_TELP == "" || newUser.PASSWORD == "" {
-					row_user, row_balance, err := user.Registrasi(db, newUser)
-					if err != nil {
-						fmt.Println("Gagal masukan data", err.Error())
+				row_user, row_balance, err := user.Registrasi(db, newUser)
+				if err != nil {
+					fmt.Println("Gagal masukan data", err.Error())
 
-					} else {
-						if row_user > 0 && row_balance > 0 {
-							fmt.Println("Success Insert Data")
-						} else {
-							fmt.Println("Gagal insert")
-						}
-					}
 				} else {
-					fmt.Println("SEMUA DATA WAJIB DIISI")
+					if row_user > 0 && row_balance > 0 {
+						fmt.Println("Success Insert Data")
+					} else {
+						fmt.Println("Gagal insert")
+					}
 				}
 
 			} else {
 				fmt.Print("\nANDA SUDAH LOGIN, SILAHKAN LOG OUT DAHULU\n\n")
-			}
-
-			fmt.Println("Menu Sign Up")
-			newUser := entities.User{}
-
-			fmt.Print("Nama \t\t: ")
-			fmt.Scanln(&newUser.NAMA)
-			fmt.Print("No. Telp \t: ")
-			fmt.Scanln(&newUser.NO_TELP)
-			fmt.Print("Password \t: ")
-			fmt.Scanln(&newUser.PASSWORD)
-
-			row_user, row_balance, err := user.Registrasi(db, newUser)
-
-			if err != nil {
-				fmt.Println("Gagal masukan data", err.Error())
-
-			} else {
-				if row_user > 0 && row_balance > 0 {
-					fmt.Println("Success Insert Data")
-				} else {
-					fmt.Println("Gagal insert")
-				}
 			}
 
 		case 2:
@@ -293,7 +266,7 @@ func main() {
 						fmt.Println("ERROR READ HISTORY TRANSFER :", err_sender.Error())
 					} else {
 						for _, v := range data_sender {
-							fmt.Println("\tNama :", v.USER.NAMA, "\tNo.Telp :", v.USER.NO_TELP,
+							fmt.Println("Nama :", v.USER.NAMA, "\tNo.Telp :", v.USER.NO_TELP,
 								"\tNominal :", v.NOMINAL, "\tMember Sejak :", v.CREATED_AT.Format("2006-01-02 15:04:05"))
 						}
 					}
@@ -304,7 +277,7 @@ func main() {
 						fmt.Println("ERROR READ HISTORY TRANSFER :", err_receiver.Error())
 					} else {
 						for _, v := range data_receiver {
-							fmt.Println("\tNama :", v.USER.NAMA, "\tNo.Telp :", v.USER.NO_TELP,
+							fmt.Println("Nama :", v.USER.NAMA, "\tNo.Telp :", v.USER.NO_TELP,
 								"\tNominal :", v.NOMINAL, "\tMember Sejak :", v.CREATED_AT.Format("2006-01-02 15:04:05"))
 						}
 					}
