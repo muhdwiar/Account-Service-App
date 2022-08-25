@@ -127,6 +127,7 @@ func main() {
 			var opsiTrans int
 			fmt.Println("1. Data Transfer Saldo")
 			fmt.Println("2. Data Pengirim Saldo")
+			fmt.Print("Masukkan Opsi :")
 			fmt.Scanln(&opsiTrans)
 
 			switch opsiTrans {
